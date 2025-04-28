@@ -1,0 +1,17 @@
+create table Author(
+	id uuid not null primary key,
+	name varchar(100) not null,
+	date_birth date not null,
+	nationality varchar(50) not null
+);
+
+create table Book (
+	id uuid not null primary key,
+	isbn varchar(20) not null,
+	title varchar(100) not null,
+	date_publication date not null,
+	genre varchar(30) not null,
+	price numeric(10,2),
+	id_author uuid not null references Author(id),
+	constraint chk_genre check(genre in ('FICCAO', 'FANTASIA', 'MISTERIO', 'ROMANCE', 'BIOGRAFIA', 'CIENCIA'))
+);
