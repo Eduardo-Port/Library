@@ -29,12 +29,12 @@ class BookRepositoryTest {
     @Commit
     void saveTest() {
         Book book = new Book();
-        book.setTitle("Stone");
-        book.setGenre(GenreBook.FANTASY);
-        book.setPublicationDate(LocalDate.of(1980, 1, 20));
-        book.setIsbn("1234");
-        book.setPrice(BigDecimal.valueOf(19.99));
-        Author author = authorRepository.findById(UUID.fromString("9223fac5-16d3-497c-a574-11c5874a134e"))
+        book.setTitle("Piraporã");
+        book.setGenre(GenreBook.MYSTERY);
+        book.setPublicationDate(LocalDate.of(1930, 1, 20));
+        book.setIsbn("1253");
+        book.setPrice(BigDecimal.valueOf(1922.99));
+        Author author = authorRepository.findById(UUID.fromString("7b069bc8-cf41-47f5-9cc2-99eeb074470c"))
                 .orElse(null);
         book.setAuthor(author);
         var bookSaved = bookRepository.save(book);
@@ -76,7 +76,6 @@ class BookRepositoryTest {
     }
 
     @Test
-    @Commit
     void delete() {
         var bookToDelete = bookRepository.findById(UUID.fromString("aecbc6bc-66be-4194-a3bd-1bca7a5dcfff"))
                 .orElse(null);
