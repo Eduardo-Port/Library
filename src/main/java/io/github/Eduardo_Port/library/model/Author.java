@@ -4,8 +4,14 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.cglib.core.Local;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +20,9 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString (exclude = "booksPublished")
+@EntityListeners(AuditingEntityListener.class)
 public class Author {
+    private final LocalDate MAX_DATEBIRTH = LocalDate.of(2022, 10, 1);
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,4 +39,25 @@ public class Author {
             cascade = CascadeType.PERSIST
     )
     private List<Book> booksPublished;
+
+    @CreatedDate
+    @Column(name = "date_register")
+    private LocalDateTime registerDate;
+    @LastModifiedDate
+    @Column(name = "date_update" )
+    private LocalDateTime updateDate;
+    @Column(name = "id_user")
+    private UUID idUser;
+
+    public void update(String name, LocalDate dateBirth, String nationality) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (dateBirth != null && !dateBirth.isAfter(MAX_DATEBIRTH)) {
+            this.dateBirth = dateBirth;
+        }
+        if(nationality != null && !nationality.isBlank()) {
+            this.nationality = nationality;
+        }
+    }
 }
