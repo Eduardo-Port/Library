@@ -3,6 +3,7 @@ package io.github.Eduardo_Port.library.controller;
 import io.github.Eduardo_Port.library.controller.dto.AuthorDTO;
 import io.github.Eduardo_Port.library.controller.dto.ResponseError;
 import io.github.Eduardo_Port.library.exceptions.DuplicatedRegisterException;
+import io.github.Eduardo_Port.library.exceptions.OperationNotAllowed;
 import io.github.Eduardo_Port.library.model.Author;
 import io.github.Eduardo_Port.library.service.AuthorService;
 import org.springframework.http.ResponseEntity;
@@ -54,14 +55,19 @@ public class AuthorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        var idAuthor = UUID.fromString(id);
-        Optional<Author> author = authorService.findById(idAuthor);
-        if(author.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Object> delete(@PathVariable String id) {
+        try {
+            var idAuthor = UUID.fromString(id);
+            Optional<Author> author = authorService.findById(idAuthor);
+            if (author.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            authorService.delete(author.get());
+            return ResponseEntity.noContent().build();
+        } catch (OperationNotAllowed e) {
+            var errorDTO = ResponseError.standardResponse(e.getMessage());
+            return ResponseEntity.status(errorDTO.status()).body(errorDTO);
         }
-        authorService.delete(author.get());
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
@@ -80,16 +86,21 @@ public class AuthorController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> update(@PathVariable String id, @RequestBody AuthorDTO authorDTO) {
-        var idAuthor = UUID.fromString(id);
-        Optional<Author> author = authorService.findById(idAuthor);
-        if(author.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var authorEntity = author.get();
-        authorEntity.update(authorDTO.name(), authorDTO.dateBirth(), authorDTO.nationality());
-        authorService.update(authorEntity);
+    public ResponseEntity<Object> update(@PathVariable String id, @RequestBody AuthorDTO authorDTO) {
+        try {
+            var idAuthor = UUID.fromString(id);
+            Optional<Author> author = authorService.findById(idAuthor);
+            if (author.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            var authorEntity = author.get();
+            authorEntity.update(authorDTO.name(), authorDTO.dateBirth(), authorDTO.nationality());
+            authorService.update(authorEntity);
 
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();
+        } catch (DuplicatedRegisterException e) {
+            var errorDTO = ResponseError.conflictResponse(e.getMessage());
+            return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+        }
     }
 }

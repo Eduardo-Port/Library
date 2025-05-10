@@ -30,4 +30,6 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     @Transactional
     @Query("delete from Book where genre = ?1")
     void deleteByGenre(GenreBook genreBook);
+
+    boolean existsByAuthor(Author author);
 }
