@@ -6,6 +6,8 @@ import io.github.Eduardo_Port.library.exceptions.DuplicatedRegisterException;
 import io.github.Eduardo_Port.library.exceptions.OperationNotAllowed;
 import io.github.Eduardo_Port.library.model.Author;
 import io.github.Eduardo_Port.library.service.AuthorService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,14 +20,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/authors")
+@RequiredArgsConstructor
 public class AuthorController {
     private final AuthorService authorService;
-    public AuthorController(AuthorService authorService) {
-        this.authorService = authorService;
-    }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody AuthorDTO author) {
+    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO author) {
         try {
             var authorEntity = author.toAuthor();
             authorService.save(authorEntity);
@@ -72,7 +72,7 @@ public class AuthorController {
 
     @GetMapping
     public ResponseEntity<List<AuthorDTO>> findByNameAndNationality(@RequestParam(required = false) String name, @RequestParam(required = false) String nationality) {
-        List<Author> result = authorService.search(name, nationality);
+        List<Author> result = authorService.searchByExample(name, nationality);
         List<AuthorDTO> list = result
                 .stream()
                 .map(

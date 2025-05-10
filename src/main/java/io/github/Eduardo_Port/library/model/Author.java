@@ -19,10 +19,10 @@ import java.util.UUID;
 @Table
 @Getter
 @Setter
-@ToString (exclude = "booksPublished")
+@ToString(exclude = "booksPublished")
 @EntityListeners(AuditingEntityListener.class)
 public class Author {
-    private final LocalDate MAX_DATEBIRTH = LocalDate.of(2022, 10, 1);
+    private final static LocalDate MAX_DATEBIRTH = LocalDate.of(2022, 10, 1);
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,20 +44,18 @@ public class Author {
     @Column(name = "date_register")
     private LocalDateTime registerDate;
     @LastModifiedDate
-    @Column(name = "date_update" )
+    @Column(name = "date_update")
     private LocalDateTime updateDate;
     @Column(name = "id_user")
     private UUID idUser;
 
     public void update(String name, LocalDate dateBirth, String nationality) {
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
-        if (dateBirth != null && !dateBirth.isAfter(MAX_DATEBIRTH)) {
-            this.dateBirth = dateBirth;
-        }
-        if(nationality != null && !nationality.isBlank()) {
-            this.nationality = nationality;
-        }
+        this.name = name;
+
+        this.dateBirth = dateBirth;
+
+
+        this.nationality = nationality;
+
     }
 }
