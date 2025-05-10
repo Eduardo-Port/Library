@@ -1,6 +1,8 @@
 package io.github.Eduardo_Port.library.controller;
 
 import io.github.Eduardo_Port.library.controller.dto.AuthorDTO;
+import io.github.Eduardo_Port.library.controller.dto.ResponseError;
+import io.github.Eduardo_Port.library.exceptions.DuplicatedRegisterException;
 import io.github.Eduardo_Port.library.model.Author;
 import io.github.Eduardo_Port.library.service.AuthorService;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +24,21 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody AuthorDTO author) {
-        var authorEntity = author.toAuthor();
-        authorService.save(authorEntity);
+    public ResponseEntity<Object> save(@RequestBody AuthorDTO author) {
+        try {
+            var authorEntity = author.toAuthor();
+            authorService.save(authorEntity);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(authorEntity.getId())
-                .toUri();
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(authorEntity.getId())
+                    .toUri();
 
-        return ResponseEntity.created(location).build();
+            return ResponseEntity.created(location).build();
+        } catch (DuplicatedRegisterException e) {
+            var errorDTO = ResponseError.conflictResponse(e.getMessage());
+            return ResponseEntity.status(errorDTO.status()).body(errorDTO);
+        }
     }
 
     @GetMapping("/{id}")

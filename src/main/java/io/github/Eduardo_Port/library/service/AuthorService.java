@@ -2,6 +2,7 @@ package io.github.Eduardo_Port.library.service;
 
 import io.github.Eduardo_Port.library.model.Author;
 import io.github.Eduardo_Port.library.repository.AuthorRepository;
+import io.github.Eduardo_Port.library.validator.AuthorValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,11 +12,14 @@ import java.util.UUID;
 @Service
 public class AuthorService {
     private final AuthorRepository repository;
-    public AuthorService(AuthorRepository repository) {
+    private final AuthorValidator validator;
+    public AuthorService(AuthorRepository repository, AuthorValidator validator) {
         this.repository = repository;
+        this.validator = validator;
     }
 
     public Author save(Author author) {
+        validator.validate(author);
         return repository.save(author);
     }
 
@@ -25,6 +29,14 @@ public class AuthorService {
 
     public void delete(Author author) {
         repository.delete(author);
+    }
+
+    public void update(Author author) {
+        if(author.getId() == null) {
+            throw new IllegalArgumentException("Author ID cannot be null");
+        }
+        validator.validate(author);
+        repository.save(author);
     }
 
     public List<Author> search(String name, String nationality) {
@@ -39,12 +51,5 @@ public class AuthorService {
         }
 
         return repository.findAll();
-    }
-
-    public void update(Author author) {
-        if(author.getId() == null) {
-            throw new IllegalArgumentException("Author ID cannot be null");
-        }
-        repository.save(author);
     }
 }
