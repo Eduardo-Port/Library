@@ -2,6 +2,7 @@ package io.github.Eduardo_Port.library.controller;
 
 import io.github.Eduardo_Port.library.controller.dto.AuthorDTO;
 import io.github.Eduardo_Port.library.controller.dto.ResponseError;
+import io.github.Eduardo_Port.library.controller.mappers.AuthorMapper;
 import io.github.Eduardo_Port.library.exceptions.DuplicatedRegisterException;
 import io.github.Eduardo_Port.library.exceptions.OperationNotAllowed;
 import io.github.Eduardo_Port.library.model.Author;
@@ -23,16 +24,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthorController {
     private final AuthorService authorService;
+    private final AuthorMapper mapper;
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO author) {
+    public ResponseEntity<Object> save(@RequestBody @Valid AuthorDTO dto) {
         try {
-            var authorEntity = author.toAuthor();
-            authorService.save(authorEntity);
+            Author author = mapper.toEntity(dto);
+            authorService.save(author);
 
             URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                     .path("/{id}")
-                    .buildAndExpand(authorEntity.getId())
+                    .buildAndExpand(author.getId())
                     .toUri();
 
             return ResponseEntity.created(location).build();
@@ -46,12 +48,12 @@ public class AuthorController {
     public ResponseEntity<AuthorDTO> findById(@PathVariable String id) {
         var idAuthor = UUID.fromString(id);
         Optional<Author> author = authorService.findById(idAuthor);
-        if(author.isPresent()) {
-            Author entity = author.get();
-            AuthorDTO authorDTO = new AuthorDTO(entity.getId(), entity.getName(), entity.getDateBirth(), entity.getNationality());
-            return ResponseEntity.ok(authorDTO);
-        }
-        return ResponseEntity.notFound().build();
+
+        return authorService.findById(idAuthor)
+                .map(autor -> {
+                    AuthorDTO dto = mapper.toDTO(autor);
+                    return ResponseEntity.ok(dto);
+                }).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")

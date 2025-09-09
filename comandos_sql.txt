@@ -10,7 +10,7 @@ create table Author(
 
 create table Book (
 	id uuid not null primary key,
-	isbn varchar(20) not null,
+	isbn varchar(20) not null unique,
 	title varchar(100) not null,
 	date_publication date not null,
 	genre varchar(30) not null,
