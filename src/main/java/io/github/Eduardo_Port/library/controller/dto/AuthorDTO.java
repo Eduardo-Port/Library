@@ -1,7 +1,5 @@
 package io.github.Eduardo_Port.library.controller.dto;
 
-import io.github.Eduardo_Port.library.model.Author;
-import io.github.Eduardo_Port.library.service.AuthorService;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -18,11 +16,4 @@ public record AuthorDTO(UUID id,
                         @Size(max = 50, min = 2, message = "Nationality must be between 2 and 50 characters.")
                         String nationality) {
 
-    public Author toAuthor() {
-        Author author = new Author();
-        author.setName(this.name);
-        author.setNationality(this.nationality);
-        author.setDateBirth(dateBirth);
-        return author;
-    }
 }

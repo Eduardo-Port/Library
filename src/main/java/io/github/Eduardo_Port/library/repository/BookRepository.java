@@ -4,6 +4,7 @@ import io.github.Eduardo_Port.library.model.Author;
 import io.github.Eduardo_Port.library.model.Book;
 import io.github.Eduardo_Port.library.model.GenreBook;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
-public interface BookRepository extends JpaRepository<Book, UUID> {
+public interface BookRepository extends JpaRepository<Book, UUID>, JpaSpecificationExecutor<Book> {
     List<Book> findByAuthor(Author author);
 
     List<Book> findByTitleContainingIgnoreCase(String title);
