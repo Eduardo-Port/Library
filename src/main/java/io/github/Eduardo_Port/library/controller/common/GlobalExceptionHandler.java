@@ -2,6 +2,7 @@ package io.github.Eduardo_Port.library.controller.common;
 
 import io.github.Eduardo_Port.library.controller.dto.ResponseError;
 import io.github.Eduardo_Port.library.exceptions.DuplicatedRegisterException;
+import io.github.Eduardo_Port.library.exceptions.InvalidFieldException;
 import io.github.Eduardo_Port.library.exceptions.OperationNotAllowed;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +45,15 @@ public class GlobalExceptionHandler {
         return ResponseError.conflictResponse(e.getMessage());
     }
 
+    @ExceptionHandler(InvalidFieldException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseError handleInvalidFieldException(InvalidFieldException e) {
+        return new ResponseError(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Validation error",
+                List.of(new io.github.Eduardo_Port.library.controller.dto.FieldError(e.getField(), e.getMessage())));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseError handleErrorNotManipulated(RuntimeException e) {
@@ -52,4 +62,6 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred. Please contact management.",
                 List.of());
     }
+
+
 }

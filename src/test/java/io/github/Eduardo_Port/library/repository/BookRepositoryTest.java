@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -114,6 +115,12 @@ class BookRepositoryTest {
         String title = "Stone";
         List<Book> books = bookRepository.findByTitleContainingIgnoreCase(title);
         books.forEach(System.out::println);
+    }
+
+    @Test
+    void searchByISBNTest() {
+        Optional<Book> book = bookRepository.findByIsbn("1234");
+        book.ifPresent(System.out::println);
     }
 
     @Test

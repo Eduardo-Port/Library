@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BookRepository extends JpaRepository<Book, UUID>, JpaSpecificationExecutor<Book> {
@@ -33,4 +34,6 @@ public interface BookRepository extends JpaRepository<Book, UUID>, JpaSpecificat
     void deleteByGenre(GenreBook genreBook);
 
     boolean existsByAuthor(Author author);
+
+    Optional<Book> findByIsbn(String isbn);
 }
