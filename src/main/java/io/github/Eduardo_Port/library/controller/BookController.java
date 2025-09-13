@@ -8,11 +8,11 @@ import io.github.Eduardo_Port.library.model.GenreBook;
 import io.github.Eduardo_Port.library.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -49,7 +49,7 @@ public class BookController implements GenericController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResultSearchBookDTO>> search(
+    public ResponseEntity<Page<ResultSearchBookDTO>> search(
             @RequestParam(value = "isbn", required = false)
             String isbn,
             @RequestParam(value = "title", required = false)
@@ -59,13 +59,17 @@ public class BookController implements GenericController {
             @RequestParam(value = "genre", required = false)
             GenreBook genre,
             @RequestParam(value = "publication-date", required = false)
-            Integer publicationDate
+            Integer publicationDate,
+            @RequestParam(value = "page", defaultValue = "0")
+            Integer page,
+            @RequestParam(value= "size", defaultValue = "10")
+            Integer size
     ) {
-        var result = service.search(isbn, authorName, title, publicationDate, genre);
-        var list =result.stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+        var result = service.search(isbn, authorName, title, publicationDate, genre, page, size);
+
+        Page<ResultSearchBookDTO> response = result.map(mapper::toDTO);
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("{id}")

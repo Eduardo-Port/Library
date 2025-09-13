@@ -3,6 +3,7 @@ package io.github.Eduardo_Port.library.repository;
 import io.github.Eduardo_Port.library.model.Author;
 import io.github.Eduardo_Port.library.model.Book;
 import io.github.Eduardo_Port.library.model.GenreBook;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;

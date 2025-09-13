@@ -7,6 +7,9 @@ import io.github.Eduardo_Port.library.repository.BookRepository;
 import io.github.Eduardo_Port.library.repository.specs.BookSpecs;
 import io.github.Eduardo_Port.library.validator.BookValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +33,14 @@ public class BookService {
         bookRepository.deleteById(id);
     }
     //isbn, title, authorName, publisherName, yearPublished
-    public List<Book> search(String isbn, String authorName, String title, Integer publicationDate, GenreBook genre) {
-//        Specification<Book> specs = Specification.where(BookSpecs.isbnEqual(isbn))
-//                .and(BookSpecs.titleLike(title)
-//                        .and(BookSpecs.genreEqual(genre)));
+    public Page<Book> search(
+            String isbn,
+            String authorName,
+            String title,
+            Integer publicationDate,
+            GenreBook genre,
+            Integer page,
+            Integer size) {
 
         Specification<Book> specs = Specification.where((root, query, cb) -> cb.conjunction());
         if(isbn != null) {
@@ -52,7 +59,9 @@ public class BookService {
             specs = specs.and(BookSpecs.authorNameLike(authorName));
         }
 
-        return bookRepository.findAll(specs);
+        Pageable pageRequest = PageRequest.of(page, size);
+
+        return bookRepository.findAll(specs, pageRequest);
     }
 
     public void update(Book book) {
